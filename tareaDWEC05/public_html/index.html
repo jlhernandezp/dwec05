@@ -11,6 +11,60 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div>TODO write content</div>
+        <script type="text/javascript">
+            
+            function libro(){
+                this.libreria=new Array()
+            }
+                    
+            libro.prototype.precioMaximo=function (){
+                if (this.libreria.length==0) return -1.0;
+                
+                mayorPrecio_=parseFloat(this.libreria[0].price);
+                for (var libro in this.libreria){
+                   
+                    mayorPrecio_=(parseFloat(this.libreria[libro].price)>mayorPrecio_) ? parseFloat(this.libreria[libro].price) : mayorPrecio_; 
+                    
+                }
+                
+                return mayorPrecio_;
+            }
+           
+                       
+                if (window.XMLHttpRequest){
+                    pXHR=new XMLHttpRequest();
+                    
+                } else if (ActiveXObject){
+                    pXHR=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                
+                pXHR.open("GET","bookStore.json",true);
+                pXHR.send(null);
+
+                pXHR.onreadystatechange=function (){
+                 
+                    if ((pXHR.status==200)&&(pXHR.readyState==4)){
+                        var libros=JSON.parse(pXHR.responseText);
+                        
+                        rellenaLibreria(libros);
+                     
+                    }
+
+                };
+           
+           
+             
+            
+            function rellenaLibreria(libros){
+                this.l=new libro();
+                for (var indice in libros){
+                    
+                     this.l.libreria.push(libros[indice]);
+                   
+                }
+                alert(this.l.precioMaximo().toString());
+            }
+            </script>
+        <div id="contenido"></div>
     </body>
 </html>
