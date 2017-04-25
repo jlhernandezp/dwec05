@@ -16,10 +16,11 @@ and open the template in the editor.
     <body>
         <script id="nuestra-plantilla" type="text/x-handlebars-template">  
               <!-- definimos la plantilla -->
-               <p>Plantilla Handlebars para libros</p>
-               <p>{{price}}  </p>
+                             
+               <p>{{title.__text}} {{title._lang}} {{year}} {{_category}}<br />
+                  Autor: {{author}}<br /> {{price}}  </p>
      
-               </ul>-->
+               
             </script>  
         <script type="text/javascript">
             
@@ -59,12 +60,10 @@ and open the template in the editor.
                         rellenaLibreria(libros);
                         document.getElementById("contenido").innerHTML=elMayorPrecioDe(libros); 
                         
-                        var fuente = $('#nuestra-plantilla').html();  
-                        
-                        
-                        var plantilla = Handlebars.compile(fuente);  
-
-                        plantillaHandlebars(libros, plantilla);
+                          
+                          
+                          
+                            plantillaHandlebars(libros);
 
                     }
 
@@ -98,18 +97,27 @@ and open the template in the editor.
                 return this.l.precioMaximo().toString();
             }
             
-            function plantillaHandlebars(libros, plantilla){
-            
+            function plantillaHandlebars(libros){
+               
                 this.l=new libro();
-                this.html = "";
-                              
+                var fuente = $('#nuestra-plantilla').html();  
+                var plantilla = Handlebars.compile(fuente);
+                var obras;
                 for (var indice in libros){
                     
-                     this.html += plantilla(this.l.libreria(libros[indice]));  
+                     this.l.libreria.push(libros[indice]);
                      
                 }
+                document.getElementById("libricos").innerHTML+="<h2>Plantilla Handlebars</h2>";
+                for (i=0;i<this.l.libreria.length;i++){
+                    obras=plantilla(this.l.libreria[i]);
+                    
+                    document.getElementById("libricos").innerHTML+=obras;
+                }
+                
+            
                  
-                $('#libricos').html(this.html);
+              
             }
                     
 
