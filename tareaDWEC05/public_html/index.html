@@ -11,16 +11,19 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript" src="js/jquery-3.2.0.js"></script>
         <script type="text/javascript" src="js/handlebars-v4.0.5.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+        <script type="text/css" src="js/jquery.dataTables.min.css"></script>
+
 
     </head>
     <body>
         <script id="nuestra-plantilla" type="text/x-handlebars-template">  
               <!-- definimos la plantilla -->
-                             
+               {{#each book}}              
                <p>{{title.__text}} {{title._lang}} {{year}} {{_category}}<br />
                   Autor: {{author}}<br /> {{price}}  </p>
      
-               
+                {{/each}}
             </script>  
         <script type="text/javascript">
             
@@ -29,10 +32,11 @@ and open the template in the editor.
             }
                     
             libro.prototype.precioMaximo=function (){
+                
                 if (this.libreria.length==0) return -1.0;
                 
                 mayorPrecio_=parseFloat(this.libreria[0].price);
-                for (var libro in this.libreria){
+               for (var libro in this.libreria){
                    
                     mayorPrecio_=(parseFloat(this.libreria[libro].price)>mayorPrecio_) ? parseFloat(this.libreria[libro].price) : mayorPrecio_; 
                     
@@ -57,74 +61,117 @@ and open the template in the editor.
                     if ((pXHR.status==200)&&(pXHR.readyState==4)){
                         var libros=JSON.parse(pXHR.responseText);
                         
-                        rellenaLibreria(libros);
-                        document.getElementById("contenido").innerHTML=elMayorPrecioDe(libros); 
-                        
-                          
-                          
-                          
-                            plantillaHandlebars(libros);
-
+                        // rellenaLibreria(libros);
+                        document.getElementById("contenido").innerHTML=elMayorPrecioDe(libros);  // Muestra el precio mayor del fichero json
+                        plantillaHandlebars(libros);        //************************************** plantilla handlebars
+                        tablaDeDatos();
                     }
 
                 };
+                
            
-           
+           /**
+            * Irrelevante
+            * 
+            * @param {type} libros
+            * @return {rellenaLibreria} 
+            */
              
             
             function rellenaLibreria(libros){
                 
                 this.l=new libro();
-                alert(libros.length);
+                 
                 
                 for (var indice in libros){
                     
                      this.l.libreria.push(libros[indice]);
                     
                 }
-               // document.getElementById("contenido").innerHTML=this.todosLosLibros;
+               
                 
             }
+            /**
+             * devuelve el precio mayor de los datos pasados en libros (formato json)
+             * 
+             * @param {type} libros
+             * @return {undefined}
+             */
             function elMayorPrecioDe(libros){
                 
                 this.l=new libro();
-
-                for (var indice in libros){
+            
+                
+                for (var indice in libros.book){
                     
-                     this.l.libreria.push(libros[indice]);
+                        this.l.libreria.push(libros.book[indice]);
+                    
                 }
                 
                 return this.l.precioMaximo().toString();
             }
-            
+            /**
+             * Plantilla handlebars
+             * 
+             * @param {type} libros          formato json
+             * @return {plantillaHandlebars} 
+             */
             function plantillaHandlebars(libros){
                
-                this.l=new libro();
                 var fuente = $('#nuestra-plantilla').html();  
                 var plantilla = Handlebars.compile(fuente);
-                var obras;
-                for (var indice in libros){
+                var obras=plantilla(libros);
+              /*  for (var indice in libros){
                     
                      this.l.libreria.push(libros[indice]);
                      
-                }
+                }*/
                 document.getElementById("libricos").innerHTML+="<h2>Plantilla Handlebars</h2>";
-                for (i=0;i<this.l.libreria.length;i++){
-                    obras=plantilla(this.l.libreria[i]);
-                    
+                //for (i=0;i<this.l.libreria.length;i++){
+                //    obras=plantilla(this.l.libreria[i]);
+                     
                     document.getElementById("libricos").innerHTML+=obras;
-                }
+                //}
                 
-            
-                 
-              
             }
-                    
+              
+            function tablaFormateada (){
+               
+                $('#tablaDeDatos').DataTable ({
+                    "ajax":'bookStore.json',
+                    "columns": [
+                        {"data":"title._lang"},
+                        {"data":"title.__text"},
+                        {"data":"author"},
+                        {"data":"year"},
+                        {"data":"price"},
+                        {"data":"_category"}],
+                    "paging":false,
+                    "ordering":false,
+                    "info":false,
+               /*     "columnDefs": [
+                        {
+                            targets:[ 0 ],
+                            orderData:[ 0, 6 ]
+                        },
+                        {
+                            targets:[ 4 ],
+                            "visible": false,
+                            "searcheable":false
+                        }
+                    ]*/
+                  
+                });
+               
+            }
 
             </script>
             
 
             <div id="contenido"></div>
             <div id="libricos"></div>
+            <table id="tablaDeDatos"><thead></thead>
+                                                    
+            </table>
     </body>
 </html>
