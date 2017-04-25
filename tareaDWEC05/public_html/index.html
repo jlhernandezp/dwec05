@@ -9,8 +9,18 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="js/jquery-3.2.0.js"></script>
+        <script type="text/javascript" src="js/handlebars-v4.0.5.js"></script>
+
     </head>
     <body>
+        <script id="nuestra-plantilla" type="text/x-handlebars-template">  
+              <!-- definimos la plantilla -->
+               <p>Plantilla Handlebars para libros</p>
+               <p>{{price}}  </p>
+     
+               </ul>-->
+            </script>  
         <script type="text/javascript">
             
             function libro(){
@@ -47,7 +57,15 @@ and open the template in the editor.
                         var libros=JSON.parse(pXHR.responseText);
                         
                         rellenaLibreria(libros);
-                     
+                        document.getElementById("contenido").innerHTML=elMayorPrecioDe(libros); 
+                        
+                        var fuente = $('#nuestra-plantilla').html();  
+                        
+                        
+                        var plantilla = Handlebars.compile(fuente);  
+
+                        plantillaHandlebars(libros, plantilla);
+
                     }
 
                 };
@@ -56,15 +74,49 @@ and open the template in the editor.
              
             
             function rellenaLibreria(libros){
+                
                 this.l=new libro();
+                alert(libros.length);
+                
                 for (var indice in libros){
                     
                      this.l.libreria.push(libros[indice]);
-                   
+                    
                 }
-                alert(this.l.precioMaximo().toString());
+               // document.getElementById("contenido").innerHTML=this.todosLosLibros;
+                
             }
+            function elMayorPrecioDe(libros){
+                
+                this.l=new libro();
+
+                for (var indice in libros){
+                    
+                     this.l.libreria.push(libros[indice]);
+                }
+                
+                return this.l.precioMaximo().toString();
+            }
+            
+            function plantillaHandlebars(libros, plantilla){
+            
+                this.l=new libro();
+                this.html = "";
+                              
+                for (var indice in libros){
+                    
+                     this.html += plantilla(this.l.libreria(libros[indice]));  
+                     
+                }
+                 
+                $('#libricos').html(this.html);
+            }
+                    
+
             </script>
-        <div id="contenido"></div>
+            
+
+            <div id="contenido"></div>
+            <div id="libricos"></div>
     </body>
 </html>
