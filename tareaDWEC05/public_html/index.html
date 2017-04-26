@@ -64,7 +64,7 @@ and open the template in the editor.
                         // rellenaLibreria(libros);
                         document.getElementById("contenido").innerHTML=elMayorPrecioDe(libros);  // Muestra el precio mayor del fichero json
                         plantillaHandlebars(libros);        //************************************** plantilla handlebars
-                        tablaDeDatos();
+                        tablaFormateada();
                     }
 
                 };
@@ -136,20 +136,25 @@ and open the template in the editor.
             }
               
             function tablaFormateada (){
+                $(document).ready(function() {
+                       
                
                 $('#tablaDeDatos').DataTable ({
-                    "ajax":'bookStore.json',
+                    //"procesing":true,
+                    "bJQueryUI" : true,
+                    "sAjaxSource":"bookStore.json",
+                    //"ajax":"bookStore.json",
                     "columns": [
-                        {"data":"title._lang"},
-                        {"data":"title.__text"},
-                        {"data":"author"},
-                        {"data":"year"},
-                        {"data":"price"},
-                        {"data":"_category"}],
-                    "paging":false,
+                        {"data":"book.title._lang"},
+                        {"data":"book.title.__text"},
+                        {"data":"book.author.0"},
+                        {"data":"book.year"},
+                        {"data":"book.price"},
+                        {"data":"book._category"}],
+                  /*  "paging":false,
                     "ordering":false,
                     "info":false,
-               /*     "columnDefs": [
+                 /*   "columnDefs": [
                         {
                             targets:[ 0 ],
                             orderData:[ 0, 6 ]
@@ -159,10 +164,10 @@ and open the template in the editor.
                             "visible": false,
                             "searcheable":false
                         }
-                    ]*/
-                  
+                    ]
+                  */
                 });
-               
+               } );
             }
 
             </script>
@@ -170,7 +175,32 @@ and open the template in the editor.
 
             <div id="contenido"></div>
             <div id="libricos"></div>
-            <table id="tablaDeDatos"><thead></thead>
+            <table id="tablaDeDatos" class="display" cellspacing="0" width="100%">
+                
+                <thead>
+                    <tr>
+                        <th>Idioma</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Año</th>
+                        <th>Precio</th>
+                        <th>Género</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Idioma</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Año</th>
+                        <th>Precio</th>
+                        <th>Género</th>
+
+                    </tr>
+                </tfoot>
                                                     
             </table>
     </body>
