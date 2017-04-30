@@ -1,5 +1,5 @@
 {
- "book":    
+ "data":    
 [
 {"title":{"_lang":"en","__text":"Everyday Italian"},"author":["Giada De Laurentiis"],"year":"2005","price":"30.00","_category":"COOKING"},
 {"title":{"_lang":"en","__text":"Harry Potter"},"author":["J K. Rowling"],"year":"2005","price":"29.99","_category":"CHILDREN"},

@@ -13,20 +13,52 @@ and open the template in the editor.
         <script type="text/javascript" src="js/handlebars-v4.0.5.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
         <script type="text/css" src="js/jquery.dataTables.min.css"></script>
-
-
+        <style type="text/css">
+            #handlebars {
+                border: 1px solid #585858;
+            }
+            
+            tr:nth-child(odd) {
+                
+                background-color: #f2f2f2;
+            }
+            tr:nth-child(even) {
+                
+                background-color: #fbfbfb;
+            }
+            .display{
+            width:100%;
+            }
+        </style>
+        
     </head>
     <body>
         <script id="nuestra-plantilla" type="text/x-handlebars-template">  
               <!-- definimos la plantilla -->
-               {{#each book}}              
-               <p>{{title.__text}} {{title._lang}} {{year}} {{_category}}<br />
-                  Autor: {{author}}<br /> {{price}}  </p>
+              <table id="handlebars">
+                <thead>
+                    <tr>
+                        <th> Título</th>
+                        <th> Idioma</th>
+                        <th> Año</th>
+                        <th> Género</th>
+                        <th> Autor</th>
+                        <th> Precio</th>
+                    </tr>        
+                </thead
+                <tbody>
+               {{#each data}}              
+                     
+                
+                   
+                      <tr><td> {{title.__text}}</td><td>{{title._lang}}</td><td> {{year}}</td><td> {{_category}}</td><td>{{author}}</td><td>{{price}}</td></tr>
      
                 {{/each}}
+                 </tbody>
+                </table>
             </script>  
         <script type="text/javascript">
-            
+          $().ready(function (){  
             function libro(){
                 this.libreria=new Array()
             }
@@ -46,28 +78,30 @@ and open the template in the editor.
             }
            
                        
-                if (window.XMLHttpRequest){
-                    pXHR=new XMLHttpRequest();
+            if (window.XMLHttpRequest){
+                pXHR=new XMLHttpRequest();
+
+            } else if (ActiveXObject){
+                pXHR=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            pXHR.open("GET","bookStore.json",true);
+            pXHR.send(null);
+
+            pXHR.onreadystatechange=function (){
+
+                if ((pXHR.status==200)&&(pXHR.readyState==4)){
+                    var libros=JSON.parse(pXHR.responseText);
+
+                    document.getElementById("contenido").innerHTML="<h1>El precio del libro más caro es " + elMayorPrecioDe(libros)+ "</h1>";  // Muestra el precio mayor del fichero json
+                    plantillaHandlebars(libros);        //************************************** plantilla handlebars
+                    tablaFormateada(); //******************************************************* plantilla DataTables
                     
-                } else if (ActiveXObject){
-                    pXHR=new ActiveXObject("Microsoft.XMLHTTP");
                 }
+
+            };
+            
                 
-                pXHR.open("GET","bookStore.json",true);
-                pXHR.send(null);
-
-                pXHR.onreadystatechange=function (){
-                 
-                    if ((pXHR.status==200)&&(pXHR.readyState==4)){
-                        var libros=JSON.parse(pXHR.responseText);
-                        
-                        // rellenaLibreria(libros);
-                        document.getElementById("contenido").innerHTML=elMayorPrecioDe(libros);  // Muestra el precio mayor del fichero json
-                        plantillaHandlebars(libros);        //************************************** plantilla handlebars
-                        tablaFormateada();
-                    }
-
-                };
                 
            
            /**
@@ -102,9 +136,9 @@ and open the template in the editor.
                 this.l=new libro();
             
                 
-                for (var indice in libros.book){
+                for (var indice in libros.data){
                     
-                        this.l.libreria.push(libros.book[indice]);
+                        this.l.libreria.push(libros.data[indice]);
                     
                 }
                 
@@ -121,43 +155,34 @@ and open the template in the editor.
                 var fuente = $('#nuestra-plantilla').html();  
                 var plantilla = Handlebars.compile(fuente);
                 var obras=plantilla(libros);
-              /*  for (var indice in libros){
-                    
-                     this.l.libreria.push(libros[indice]);
-                     
-                }*/
+            
                 document.getElementById("libricos").innerHTML+="<h2>Plantilla Handlebars</h2>";
-                //for (i=0;i<this.l.libreria.length;i++){
-                //    obras=plantilla(this.l.libreria[i]);
                      
                     document.getElementById("libricos").innerHTML+=obras;
-                //}
-                
+                             
             }
               
             function tablaFormateada (){
-                $(document).ready(function() {
-                       
                
                 $('#tablaDeDatos').DataTable ({
-                    //"procesing":true,
-                    "bJQueryUI" : true,
-                    "sAjaxSource":"bookStore.json",
-                    //"ajax":"bookStore.json",
+                    "ajax":'bookStore.json',
                     "columns": [
-                        {"data":"book.title._lang"},
-                        {"data":"book.title.__text"},
-                        {"data":"book.author.0"},
-                        {"data":"book.year"},
-                        {"data":"book.price"},
-                        {"data":"book._category"}],
-                  /*  "paging":false,
-                    "ordering":false,
+                        {"data":"title._lang"},
+                        {"data":"title.__text"},
+                        {"data":"author"},
+                        {"data":"year"},
+                        {"data":"price"},
+                        {"data":"_category"}],
+                
+                    "paging":false,
+                  //  "ordering":false,
                     "info":false,
-                 /*   "columnDefs": [
+                    "order": [[2,"des"],[1,"des"]],
+                    "columnDefs": [
                         {
-                            targets:[ 0 ],
-                            orderData:[ 0, 6 ]
+                    //         "orderData": [ 2, 1],    "targets": 0 
+                            
+                            
                         },
                         {
                             targets:[ 4 ],
@@ -165,43 +190,38 @@ and open the template in the editor.
                             "searcheable":false
                         }
                     ]
-                  */
+                  
                 });
-               } );
+               
             }
-
+            });
             </script>
             
 
             <div id="contenido"></div>
             <div id="libricos"></div>
-            <table id="tablaDeDatos" class="display" cellspacing="0" width="100%">
-                
+            <h2>Plantilla Datatables</h2>
+            <table id="tablaDeDatos" class="display">
                 <thead>
                     <tr>
                         <th>Idioma</th>
                         <th>Título</th>
-                        <th>Autor</th>
+                        <th>Author</th>
                         <th>Año</th>
                         <th>Precio</th>
                         <th>Género</th>
-                        
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
                 <tfoot>
                     <tr>
                         <th>Idioma</th>
                         <th>Título</th>
-                        <th>Autor</th>
+                        <th>Author</th>
                         <th>Año</th>
                         <th>Precio</th>
                         <th>Género</th>
-
                     </tr>
-                </tfoot>
-                                                    
+                </tfoot>                                    
             </table>
     </body>
 </html>
